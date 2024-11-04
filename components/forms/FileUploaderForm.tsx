@@ -7,9 +7,8 @@ import { Progress } from '@nextui-org/progress'
 import { Snippet } from '@nextui-org/snippet'
 import { ApiUploadFileResponse } from '@/types/api'
 import translateErrorMsg from '@/lib/translateErrorMsg'
-import getApiUrl from '@/app/actions/getApiUrl'
 
-export default function UploadFile() {
+export default function FileUploaderForm() {
   const hiddenFileInput = useRef<HTMLInputElement>(null)
   const nameInput = useRef<HTMLInputElement>(null)
 
@@ -41,7 +40,7 @@ export default function UploadFile() {
     data.set('file', hiddenFileInput.current.files[0])
 
     const response = await axios.post(
-      await getApiUrl('/api/files/upload'),
+      'https://krfx.ru/api/files/upload',
       data,
       {
         onUploadProgress: (progressEvent) => {

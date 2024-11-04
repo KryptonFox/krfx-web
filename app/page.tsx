@@ -1,9 +1,9 @@
-import ShortenUploadForm from '@/app/components/shortenUploadForm'
+import ActionTabs from '@/components/forms/ActionTabs'
 
 export default function Home() {
   return (
     <div className="container mx-auto">
-      <ShortenUploadForm />
+      <ActionTabs />
     </div>
   )
 }
