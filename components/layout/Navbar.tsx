@@ -4,8 +4,8 @@ import {
   NavbarContent,
   NavbarItem,
 } from '@nextui-org/navbar'
-import ThemeSwitcher from '@/app/components/themeSwitcher'
-import NavbarItems from '@/app/components/navbarItems'
+import ThemeSwitcher from '@/components/common/ThemeSwitcher'
+import NavbarItems from '@/components/layout/NavbarItems'
 
 export default function Navbar() {
   return (

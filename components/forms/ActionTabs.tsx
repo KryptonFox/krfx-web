@@ -1,11 +1,11 @@
 'use client'
 import { Tab, Tabs } from '@nextui-org/tabs'
-import ShortenLink from '@/app/components/shortenLink'
-import UploadFile from '@/app/components/uploadFile'
+import LinkShortenerForm from '@/components/forms/LinkShortenerForm'
+import FileUploaderForm from '@/components/forms/FileUploaderForm'
 import { Accordion, AccordionItem } from '@nextui-org/accordion'
 import { useState } from 'react'
 
-export default function ShortenUploadForm() {
+export default function ActionTabs() {
   const [selectedTabKey, setSelectedTabKey] = useState<
     'link' | 'file' | string
   >('link')
@@ -17,10 +17,10 @@ export default function ShortenUploadForm() {
         onSelectionChange={(key) => setSelectedTabKey(key.toString())}
       >
         <Tab className="px-0" title="Сократить ссылку" key="link">
-          <ShortenLink />
+          <LinkShortenerForm />
         </Tab>
         <Tab className="px-0" title="Загрузить файл" key="file">
-          <UploadFile />
+          <FileUploaderForm />
         </Tab>
       </Tabs>
       <Accordion variant="splitted">

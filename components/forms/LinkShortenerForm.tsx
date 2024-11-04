@@ -5,10 +5,9 @@ import React, { useRef, useState } from 'react'
 import { ApiCreateShortLinkResponse } from '@/types/api'
 import { Snippet } from '@nextui-org/snippet'
 import translateErrorMsg from '@/lib/translateErrorMsg'
-import getApiUrl from '@/app/actions/getApiUrl'
 import axios from 'axios'
 
-export default function ShortenLink() {
+export default function LinkShortenerForm() {
   const urlRef = useRef<HTMLInputElement>(null)
   const nameRef = useRef<HTMLInputElement>(null)
 
@@ -30,7 +29,7 @@ export default function ShortenLink() {
     setError(undefined)
     setURL(undefined)
 
-    const response = await axios.post(await getApiUrl('/api/links/create'), {
+    const response = await axios.post('https://krfx.ru/api/links/create', {
       url,
       name,
     })

@@ -1,7 +1,7 @@
 'use client'
 import { Accordion, AccordionItem } from '@nextui-org/accordion'
 
-export default function Accordions() {
+export default function AboutPageAccordions() {
   return (
     <Accordion>
       <AccordionItem key="2" title="Является ли сервис платным?">
