@@ -30,7 +30,7 @@ export default function FileUploaderForm() {
     setDirectURL(undefined)
 
     const data = new FormData()
-    if (!hiddenFileInput.current?.files) return setIsLoading(false)
+    if (!hiddenFileInput.current?.files?.[0]) return setIsLoading(false)
     if (hiddenFileInput.current.files[0].size > 104857600) {
       setError('Вес файла слишком большой')
       setIsLoading(false)
@@ -67,7 +67,7 @@ export default function FileUploaderForm() {
     <>
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-4 items-center"
+        className="flex flex-col items-center gap-4"
       >
         <input
           onChange={(event) => setFilename(event.target.files?.item(0)?.name)}
@@ -76,9 +76,9 @@ export default function FileUploaderForm() {
           id="file"
           className="hidden"
         />
-        <div className="flex justify-start items-center w-full">
+        <div className="flex w-full items-center justify-start">
           <Button
-            className="flex flex-col items-center gap-0 min-w-[40%] h-[56px]"
+            className="flex h-[56px] min-w-[40%] flex-col items-center gap-0"
             variant="faded"
             size="lg"
             fullWidth
@@ -88,7 +88,7 @@ export default function FileUploaderForm() {
             <span className="text-xs text-zinc-400">Размер ≤ 100 МБ</span>
           </Button>
           {!!filename && (
-            <span className="min-w-[60%] px-2 whitespace-nowrap overflow-x-clip overflow-ellipsis">
+            <span className="min-w-[60%] overflow-x-clip overflow-ellipsis whitespace-nowrap px-2">
               {filename || '...'}
             </span>
           )}
@@ -111,7 +111,7 @@ export default function FileUploaderForm() {
           Загрузить
         </Button>
       </form>
-      <div className="flex flex-col gap-3 items-center m-4">
+      <div className="m-4 flex flex-col items-center gap-3">
         {isLoading && (
           <Progress
             aria-label="Loading..."
@@ -121,7 +121,7 @@ export default function FileUploaderForm() {
         )}
         {error && <p className="font-medium text-red-400">{error}</p>}
         {URL && (
-          <div className="flex flex-col items-start gap-2 w-full">
+          <div className="flex w-full flex-col items-start gap-2">
             <p className="font-light text-zinc-300">Ваша ссылка:</p>
             <Snippet hideSymbol fullWidth>
               {URL}
@@ -129,7 +129,7 @@ export default function FileUploaderForm() {
           </div>
         )}
         {directURL && (
-          <div className="flex flex-col items-start gap-2 w-full">
+          <div className="flex w-full flex-col items-start gap-2">
             <p className="font-light text-zinc-300">Прямая ссылка на файл:</p>
             <Snippet hideSymbol fullWidth>
               {directURL}
