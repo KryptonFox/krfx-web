@@ -1,6 +1,7 @@
-import type { Metadata } from 'next'
 import './globals.css'
 import React from 'react'
+import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/react'
 import Providers from '@/app/providers'
 import { rubik } from '@/app/fonts'
 import Navbar from '@/components/layout/Navbar'
@@ -26,6 +27,7 @@ export default function RootLayout({
           </main>
           <Footer />
         </Providers>
+        <Analytics />
       </body>
     </html>
   )
