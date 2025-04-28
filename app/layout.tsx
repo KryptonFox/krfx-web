@@ -4,6 +4,7 @@ import React from 'react'
 import Providers from '@/app/providers'
 import { rubik } from '@/app/fonts'
 import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
 
 export const metadata: Metadata = {
   title: 'Krfx Web UI',
@@ -19,8 +20,11 @@ export default function RootLayout({
     <html lang="ru">
       <body className={rubik.className}>
         <Providers>
-          <Navbar />
-          {children}
+          <main className="min-h-screen">
+            <Navbar />
+            {children}
+          </main>
+          <Footer />
         </Providers>
       </body>
     </html>
