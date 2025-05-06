@@ -1,5 +1,5 @@
 'use client'
-import { Accordion, AccordionItem } from '@nextui-org/accordion'
+import { Accordion, AccordionItem } from "@heroui/accordion"
 
 export default function AboutPageAccordions() {
   return (

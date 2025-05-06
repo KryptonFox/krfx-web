@@ -3,7 +3,7 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-} from '@nextui-org/navbar'
+} from "@heroui/navbar"
 import ThemeSwitcher from '@/components/common/ThemeSwitcher'
 import NavbarItems from '@/components/layout/NavbarItems'
 

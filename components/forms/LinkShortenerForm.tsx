@@ -1,9 +1,9 @@
 'use client'
-import { Input } from '@nextui-org/input'
-import { Button } from '@nextui-org/button'
+import { Input } from "@heroui/input"
+import { Button } from "@heroui/button"
 import React, { useRef, useState } from 'react'
 import { ApiCreateShortLinkResponse } from '@/types/api'
-import { Snippet } from '@nextui-org/snippet'
+import { Snippet } from "@heroui/snippet"
 import translateErrorMsg from '@/lib/translateErrorMsg'
 import axios from 'axios'
 

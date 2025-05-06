@@ -1,8 +1,8 @@
 'use client'
-import { Tab, Tabs } from '@nextui-org/tabs'
+import { Tab, Tabs } from "@heroui/tabs"
 import LinkShortenerForm from '@/components/forms/LinkShortenerForm'
 import FileUploaderForm from '@/components/forms/FileUploaderForm'
-import { Accordion, AccordionItem } from '@nextui-org/accordion'
+import { Accordion, AccordionItem } from "@heroui/accordion"
 import { useState } from 'react'
 
 export default function ActionTabs() {

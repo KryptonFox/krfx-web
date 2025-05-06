@@ -1,10 +1,10 @@
 'use client'
 import axios from 'axios'
 import React, { useRef, useState } from 'react'
-import { Input } from '@nextui-org/input'
-import { Button } from '@nextui-org/button'
-import { Progress } from '@nextui-org/progress'
-import { Snippet } from '@nextui-org/snippet'
+import { Input } from "@heroui/input"
+import { Button } from "@heroui/button"
+import { Progress } from "@heroui/progress"
+import { Snippet } from "@heroui/snippet"
 import { ApiUploadFileResponse } from '@/types/api'
 import translateErrorMsg from '@/lib/translateErrorMsg'
 
@@ -82,7 +82,7 @@ export default function FileUploaderForm() {
             variant="faded"
             size="lg"
             fullWidth
-            onClick={() => hiddenFileInput.current!.click()}
+            onPress={() => hiddenFileInput.current!.click()}
           >
             <span>Выберите файл</span>
             <span className="text-xs text-zinc-400">Размер ≤ 100 МБ</span>
