@@ -88,7 +88,7 @@ export default function FileUploaderForm() {
             <span className="text-xs text-zinc-400">Размер ≤ 100 МБ</span>
           </Button>
           {!!filename && (
-            <span className="min-w-[60%] overflow-x-clip overflow-ellipsis whitespace-nowrap px-2">
+            <span className="min-w-[60%] overflow-x-clip text-ellipsis whitespace-nowrap px-2">
               {filename || '...'}
             </span>
           )}
