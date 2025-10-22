@@ -1,10 +1,10 @@
 'use client'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import React, { useRef, useState } from 'react'
-import { Input } from "@heroui/input"
-import { Button } from "@heroui/button"
-import { Progress } from "@heroui/progress"
-import { Snippet } from "@heroui/snippet"
+import { Input } from '@heroui/input'
+import { Button } from '@heroui/button'
+import { Progress } from '@heroui/progress'
+import { Snippet } from '@heroui/snippet'
 import { ApiUploadFileResponse } from '@/types/api'
 import translateErrorMsg from '@/lib/translateErrorMsg'
 
@@ -14,7 +14,7 @@ export default function FileUploaderForm() {
 
   const [filename, setFilename] = useState<string | undefined>()
   const [error, setError] = useState<string | undefined>()
-  const [URL, setURL] = useState<string | undefined>()
+  const [resultUrl, setResultUrl] = useState<string | undefined>()
   const [directURL, setDirectURL] = useState<string | undefined>()
   const [nameInvalid, setNameInvalid] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -26,34 +26,43 @@ export default function FileUploaderForm() {
     setIsLoading(true)
     setNameInvalid(false)
     setError(undefined)
-    setURL(undefined)
+    setResultUrl(undefined)
     setDirectURL(undefined)
 
     const data = new FormData()
     if (!hiddenFileInput.current?.files?.[0]) return setIsLoading(false)
     if (hiddenFileInput.current.files[0].size > 104857600) {
       setError('Вес файла слишком большой')
-      setIsLoading(false)
-      return
+      return setIsLoading(false)
     }
     if (nameInput.current?.value) data.set('name', nameInput.current.value)
     data.set('file', hiddenFileInput.current.files[0])
 
-    const response = await axios.post(
-      'https://krfx.ru/api/files/upload',
-      data,
-      {
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.progress)
-            setLoadingProgress(Math.round(progressEvent.progress * 100))
+    let response: AxiosResponse
+    try {
+      response = await axios.post(
+        new URL(
+          '/api/record/upload',
+          process.env.NEXT_PUBLIC_API_URL!,
+        ).toString(),
+        data,
+        {
+          onUploadProgress: (progressEvent) => {
+            console.log(progressEvent)
+            if (progressEvent.progress)
+              setLoadingProgress(Math.round(progressEvent.progress * 100))
+          },
         },
-      },
-    )
-    if (response.status !== 200) return setIsLoading(false)
+      )
+    } catch (err) {
+      console.error(err)
+      setIsLoading(false)
+      return
+    }
 
     const responseData: ApiUploadFileResponse = response.data
     if (responseData.success) {
-      setURL(responseData.url)
+      setResultUrl(responseData.url)
       setDirectURL(responseData.directURL)
     } else {
       const errorMsg = translateErrorMsg(responseData.error)
@@ -120,11 +129,11 @@ export default function FileUploaderForm() {
           />
         )}
         {error && <p className="font-medium text-red-400">{error}</p>}
-        {URL && (
+        {resultUrl && (
           <div className="flex w-full flex-col items-start gap-2">
             <p className="font-light text-zinc-300">Ваша ссылка:</p>
             <Snippet hideSymbol fullWidth>
-              {URL}
+              {resultUrl}
             </Snippet>
           </div>
         )}
