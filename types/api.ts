@@ -6,18 +6,28 @@ export type ApiUploadFileResponse =
   | ApiUploadFileResponseSuccess
   | ApiResponseFailure
 
-interface ApiCreateShortLinkResponseSuccess {
-  success: true
-  url: string
+export interface ApiCreateShortLinkResponseSuccess {
+  id: string
+  owner_id?: string
+  link: string
+  created_at: string
+  is_temp: boolean
+  expires_at?: string
 }
 
-interface ApiUploadFileResponseSuccess {
-  success: true
-  url: string
-  directURL: string
+export interface ApiUploadFileResponseSuccess {
+  id: string
+  owner_id?: string
+  link: string
+  cdn_link: string
+  hash: string
+  mime_type: string
+  created_at: string
+  is_temp: boolean
+  expires_at?: string
 }
 
-interface ApiResponseFailure {
-  success: false
-  error: string
+export interface ApiResponseFailure {
+  error_type: string
+  message: string
 }

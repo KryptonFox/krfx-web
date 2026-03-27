@@ -1,51 +1,56 @@
 'use client'
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosError } from 'axios'
 import React, { useRef, useState } from 'react'
 import { Input } from '@heroui/input'
 import { Button } from '@heroui/button'
 import { Progress } from '@heroui/progress'
 import { Snippet } from '@heroui/snippet'
-import { ApiUploadFileResponse } from '@/types/api'
+import {
+  ApiResponseFailure,
+  ApiUploadFileResponse,
+  ApiUploadFileResponseSuccess,
+} from '@/types/api'
 import translateErrorMsg from '@/lib/translateErrorMsg'
 
 export default function FileUploaderForm() {
   const hiddenFileInput = useRef<HTMLInputElement>(null)
   const nameInput = useRef<HTMLInputElement>(null)
 
-  const [filename, setFilename] = useState<string | undefined>()
-  const [error, setError] = useState<string | undefined>()
-  const [resultUrl, setResultUrl] = useState<string | undefined>()
-  const [directURL, setDirectURL] = useState<string | undefined>()
+  const [error, setErrorMsg] = useState<string | undefined>()
   const [nameInvalid, setNameInvalid] = useState<boolean>(false)
+
+  const [filename, setFilename] = useState<string | undefined>()
+  const [resultUrl, setResultUrl] = useState<string | undefined>()
+  const [directURL, setDirectUrl] = useState<string | undefined>()
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [loadingProgress, setLoadingProgress] = useState<number>(0)
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
     setIsLoading(true)
     setNameInvalid(false)
-    setError(undefined)
+    setErrorMsg(undefined)
     setResultUrl(undefined)
-    setDirectURL(undefined)
+    setDirectUrl(undefined)
 
-    const data = new FormData()
+    const form_data = new FormData()
     if (!hiddenFileInput.current?.files?.[0]) return setIsLoading(false)
     if (hiddenFileInput.current.files[0].size > 104857600) {
-      setError('Вес файла слишком большой')
+      setErrorMsg('Вес файла слишком большой')
       return setIsLoading(false)
     }
-    if (nameInput.current?.value) data.set('name', nameInput.current.value)
-    data.set('file', hiddenFileInput.current.files[0])
+    if (nameInput.current?.value) form_data.set('name', nameInput.current.value)
+    form_data.set('file', hiddenFileInput.current.files[0])
 
-    let response: AxiosResponse
-    try {
-      response = await axios.post(
+    const response = await axios
+      .post<ApiUploadFileResponse>(
         new URL(
           '/api/record/upload',
           process.env.NEXT_PUBLIC_API_URL!,
         ).toString(),
-        data,
+        form_data,
         {
           onUploadProgress: (progressEvent) => {
             console.log(progressEvent)
@@ -54,21 +59,28 @@ export default function FileUploaderForm() {
           },
         },
       )
-    } catch (err) {
-      console.error(err)
-      setIsLoading(false)
-      return
-    }
+      .catch((error: Error | AxiosError) => {
+        if (axios.isAxiosError(error) && !!error.response?.data) {
+          const error_data = JSON.parse(
+            error.response?.data,
+          ) as ApiResponseFailure
 
-    const responseData: ApiUploadFileResponse = response.data
-    if (responseData.success) {
-      setResultUrl(responseData.url)
-      setDirectURL(responseData.directURL)
-    } else {
-      const errorMsg = translateErrorMsg(responseData.error)
-      if (errorMsg.type === 'name') setNameInvalid(true)
-      setError(errorMsg.msg)
-    }
+          if (error_data.error_type === 'name') setNameInvalid(true)
+
+          setErrorMsg(translateErrorMsg(error_data.message))
+        }
+        setIsLoading(false)
+        console.error(error)
+        return
+      })
+
+    if (!response) return
+
+    const response_data = response.data
+    const success_data = response_data as ApiUploadFileResponseSuccess
+
+    setResultUrl(success_data.link)
+    setDirectUrl(success_data.cdn_link)
     setIsLoading(false)
   }
 
@@ -87,7 +99,7 @@ export default function FileUploaderForm() {
         />
         <div className="flex w-full items-center justify-start">
           <Button
-            className="flex h-[56px] min-w-[40%] flex-col items-center gap-0"
+            className="flex h-14 min-w-[40%] flex-col items-center gap-0"
             variant="faded"
             size="lg"
             fullWidth
@@ -97,7 +109,7 @@ export default function FileUploaderForm() {
             <span className="text-xs text-zinc-400">Размер ≤ 100 МБ</span>
           </Button>
           {!!filename && (
-            <span className="min-w-[60%] overflow-x-clip text-ellipsis whitespace-nowrap px-2">
+            <span className="min-w-[60%] overflow-x-clip px-2 text-ellipsis whitespace-nowrap">
               {filename || '...'}
             </span>
           )}

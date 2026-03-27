@@ -2,55 +2,77 @@
 import { Input } from '@heroui/input'
 import { Button } from '@heroui/button'
 import React, { useRef, useState } from 'react'
-import { ApiCreateShortLinkResponse } from '@/types/api'
+import {
+  ApiCreateShortLinkResponse,
+  ApiCreateShortLinkResponseSuccess,
+  ApiResponseFailure,
+} from '@/types/api'
 import { Snippet } from '@heroui/snippet'
+import axios, { AxiosError } from 'axios'
 import translateErrorMsg from '@/lib/translateErrorMsg'
-import axios from 'axios'
 
 export default function LinkShortenerForm() {
   const urlRef = useRef<HTMLInputElement>(null)
   const nameRef = useRef<HTMLInputElement>(null)
 
-  const [error, setError] = useState<string | undefined>()
+  const [error, setErrorMsg] = useState<string | undefined>()
+
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
   const [resultUrl, setResultUrl] = useState<string | undefined>()
   const [urlInvalid, setUrlInvalid] = useState<boolean>(false)
   const [nameInvalid, setNameInvalid] = useState<boolean>(false)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    console.log(process.env.NEXT_PUBLIC_API_URL!)
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
+
     const url = urlRef.current?.value
     const name = nameRef.current?.value
-    if (!url) return setUrlInvalid(true)
+    if (!url) {
+      setUrlInvalid(true)
+      return
+    }
 
+    setErrorMsg(undefined)
     setUrlInvalid(false)
     setNameInvalid(false)
-    setIsLoading(true)
-    setError(undefined)
+
     setResultUrl(undefined)
+    setIsLoading(true)
 
-    const response = await axios.post(
-      new URL(
-        '/api/record/create_link',
-        process.env.NEXT_PUBLIC_API_URL!,
-      ).toString(),
-      {
-        url,
-        name,
-      },
-    )
-    if (response.status !== 200) return setIsLoading(false)
+    const response = await axios
+      .post<ApiCreateShortLinkResponse>(
+        new URL(
+          '/api/record/create_link',
+          process.env.NEXT_PUBLIC_API_URL!,
+        ).toString(),
+        {
+          url,
+          name,
+        },
+      )
+      .catch((error: Error | AxiosError) => {
+        if (axios.isAxiosError(error) && !!error.response?.data) {
+          const error_data = JSON.parse(
+            error.response?.data,
+          ) as ApiResponseFailure
 
-    const data: ApiCreateShortLinkResponse = response.data
-    if (!data.success) {
-      const err = translateErrorMsg(data.error)
-      if (err.type === 'url') setUrlInvalid(true)
-      if (err.type === 'name') setNameInvalid(true)
-      setError(err.msg)
-    } else {
-      setResultUrl(data.url)
-    }
+          if (error_data.error_type === 'url') setUrlInvalid(true)
+          if (error_data.error_type === 'name') setNameInvalid(true)
+
+          setErrorMsg(translateErrorMsg(error_data.message))
+        }
+        setIsLoading(false)
+        console.error(error)
+        return
+      })
+
+    if (!response) return
+
+    const data = response.data
+    const success_data = data as ApiCreateShortLinkResponseSuccess
+
+    setResultUrl(success_data.link)
     setIsLoading(false)
   }
 
@@ -66,6 +88,9 @@ export default function LinkShortenerForm() {
           name="url"
           label="Ссылка"
           variant="faded"
+          onChange={() => {
+            if (urlInvalid) setUrlInvalid(false)
+          }}
           isInvalid={urlInvalid}
           isDisabled={isLoading}
           isRequired
@@ -76,6 +101,9 @@ export default function LinkShortenerForm() {
           name="name"
           label="Имя"
           variant="faded"
+          onChange={() => {
+            if (nameInvalid) setNameInvalid(false)
+          }}
           isInvalid={nameInvalid}
           isDisabled={isLoading}
         />
